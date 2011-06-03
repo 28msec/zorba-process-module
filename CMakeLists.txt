@@ -27,5 +27,5 @@ ADD_SUBDIRECTORY("src")
 ADD_TEST_DIRECTORY("${PROJECT_SOURCE_DIR}/test")
 
 IF(WIN32)
-  EXPECTED_FAILURE(test/rbkt/zorba/modules/process 3284888)
+  EXPECTED_FAILURE(zorba_process_module/process.xq 3284888)
 ENDIF(WIN32)
