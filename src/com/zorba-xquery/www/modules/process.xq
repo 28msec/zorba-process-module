@@ -24,6 +24,7 @@
  :</pre>
  :
  : @author Cezar Andrei
+ : @project external
  :
  :)
 module namespace process = "http://www.zorba-xquery.com/modules/process";
