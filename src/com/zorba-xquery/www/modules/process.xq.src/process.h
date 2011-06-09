@@ -43,7 +43,7 @@ protected:
     }
   };
 
-  typedef std::map<String, StatelessExternalFunction*, ltstr> FuncMap_t;
+  typedef std::map<String, ExternalFunction*, ltstr> FuncMap_t;
 
   FuncMap_t theFunctions;
 
@@ -53,7 +53,7 @@ public:
   virtual zorba::String getURI() const
   { return "http://www.zorba-xquery.com/modules/process"; }
 
-  virtual zorba::StatelessExternalFunction*
+  virtual zorba::ExternalFunction*
   getExternalFunction(const zorba::String& aLocalname);
 
   virtual void destroy();
@@ -71,7 +71,7 @@ public:
 
 /******************************************************************************
  *****************************************************************************/
-class ExecFunction : public NonePureStatelessExternalFunction
+class ExecFunction : public ContextualExternalFunction
 {
 public:
   ExecFunction(const ProcessModule* aModule) : theModule(aModule) {}

@@ -486,11 +486,11 @@ String ExecFunction::getOneStringArgument (const Arguments_t& aArgs, int aPos)
 
 /******************************************************************************
  *****************************************************************************/
-zorba::StatelessExternalFunction*
+zorba::ExternalFunction*
 ProcessModule::getExternalFunction(const zorba::String& aLocalname)
 {
   FuncMap_t::const_iterator lFind = theFunctions.find(aLocalname);
-  zorba::StatelessExternalFunction*& lFunc = theFunctions[aLocalname];
+  zorba::ExternalFunction*& lFunc = theFunctions[aLocalname];
   if (lFind == theFunctions.end())
   {
     if (aLocalname.compare("exec"))
