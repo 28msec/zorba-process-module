@@ -493,7 +493,7 @@ ProcessModule::getExternalFunction(const zorba::String& aLocalname)
   zorba::ExternalFunction*& lFunc = theFunctions[aLocalname];
   if (lFind == theFunctions.end())
   {
-    if (aLocalname.compare("exec"))
+    if (!aLocalname.compare("exec"))
     {
       lFunc = new ExecFunction(this);
     }
@@ -519,12 +519,6 @@ ItemFactory* ProcessModule::theFactory = 0;
 
 } /* namespace processmodule */
 } /* namespace zorba */
-
-/*
-extern "C" ZORBA_MODULES_DLL_EXPORT zorba::ExternalModule* createModule()
-{
-  return new zorba::processmodule::ProcessModule();
-}*/
 
 #ifdef WIN32
 #  define DLL_EXPORT __declspec(dllexport)
