@@ -28,4 +28,6 @@ ADD_TEST_DIRECTORY("${PROJECT_SOURCE_DIR}/test")
 
 IF(WIN32)
   EXPECTED_FAILURE(zorba_process_module/process.xq 3284888)
+ELSE(WIN32)
+  EXPECTED_FAILURE(zorba_process_module/process.xq 3316641)
 ENDIF(WIN32)
