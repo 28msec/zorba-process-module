@@ -12,5 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-GENERATE_MODULE_LIBRARY(process "")
-  
+DECLARE_ZORBA_MODULE("http://www.zorba-xquery.com/modules/process" 1.0 "process.xq")

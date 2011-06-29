@@ -29,6 +29,9 @@
  :)
 module namespace process = "http://www.zorba-xquery.com/modules/process";
 
+declare namespace ver = "http://www.zorba-xquery.com/options/versioning";
+declare option ver:module-version "1.0";
+
 (:~
  : Simple process execution.
  : @param $cmd   shell commad to be executed (without arguments)
