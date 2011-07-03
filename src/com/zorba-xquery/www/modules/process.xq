@@ -29,6 +29,8 @@
  :)
 module namespace process = "http://www.zorba-xquery.com/modules/process";
 
+declare namespace ann = "http://www.zorba-xquery.com/annotations";
+
 declare namespace ver = "http://www.zorba-xquery.com/options/versioning";
 declare option ver:module-version "1.0";
 
@@ -38,7 +40,7 @@ declare option ver:module-version "1.0";
  : @return       the result of the execution
  : @error        An error is thrown if process canot be executed.
  :)
-declare %sequential function process:exec (
+declare %ann:sequential function process:exec (
     $cmd as xs:string
     ) as node() external;
 
@@ -49,9 +51,7 @@ declare %sequential function process:exec (
  :  @return       the result of the execution
  : @error        An error is thrown if process canot be executed.
  :)
-declare %sequential function process:exec (
+declare %ann:sequential function process:exec (
     $cmd as xs:string,
     $args as xs:string*
     ) as node() external;
-
-
