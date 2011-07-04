@@ -15,7 +15,7 @@
 :)
 
 (:~
- : Module provides funtions to execute a command.
+ : Module provides functions to execute a command.
  : Examples:
  :<pre class="brush: xquery;">
  :  import module namespace proc = "http://www.zorba-xquery.com/modules/process";
@@ -38,7 +38,7 @@ declare option ver:module-version "1.0";
  : Simple process execution.
  : @param $cmd   shell commad to be executed (without arguments)
  : @return       the result of the execution
- : @error        An error is thrown if process canot be executed.
+ : @error        An error is thrown if process can't be executed.
  :)
 declare %ann:sequential function process:exec (
     $cmd as xs:string
@@ -49,7 +49,7 @@ declare %ann:sequential function process:exec (
  :  @param $cmd   shell commad to be executed
  :  @param $args  arguments for cmd
  :  @return       the result of the execution
- : @error        An error is thrown if process canot be executed.
+ : @error        An error is thrown if process can't be executed.
  :)
 declare %ann:sequential function process:exec (
     $cmd as xs:string,
