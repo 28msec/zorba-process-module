@@ -17,13 +17,23 @@ xquery version "3.0";
 :)
 
 (:~
- : Module provides functions to execute a command.
- : Examples:
+ : This module provides functions to create a native process and return the result
+ : (i.e. exit code, result on standard out and error).
+ :
+ : Example:
  :<pre class="brush: xquery;">
  :  import module namespace proc = "http://www.zorba-xquery.com/modules/process";
- :  proc:exec("ls"),
- :  proc:exec("md5sum", "file.txt"),
+ :  proc:exec("ls")
  :</pre>
+ :
+ : Potential result:
+ : <pre>
+ : &lt;result xmlns="http://www.zorba-xquery.com/modules/process">
+ :   &lt;stdout>myfile.txt&lt;/stout>
+ :   &lt;stderr/>
+ :   &lt;exit-code>0&lt;/exit-code>
+ : &lt;/result>
+ : </pre>
  :
  : @author Cezar Andrei
  : @project external
@@ -37,23 +47,39 @@ declare namespace ver = "http://www.zorba-xquery.com/options/versioning";
 declare option ver:module-version "1.0";
 
 (:~
- : Simple process execution.
- : @param $cmd   shell commad to be executed (without arguments)
- : @return       the result of the execution
- : @error        An error is thrown if process can't be executed.
+ : Executes the specified string command in a separate process.
+ : This function does not allow arguments to be passed to
+ : the command.
+ :
+ : @param $cmd command to be executed (without arguments)
+ :
+ : @return the result of the execution as an element as
+ :         shown in the documentation of this module. The exit-code
+ :         element returns the exit code of the child process.
+ :
+ : @error process:PROC01 if an error occurred while communicating 
+ :   with the executed process.
  :)
-declare %ann:sequential function process:exec (
-    $cmd as xs:string
-    ) as node() external;
+declare %ann:sequential function process:exec(
+  $cmd as xs:string
+) as element(process:result) external;
 
 (:~
- :  Process execution with arguments.
- :  @param $cmd   shell commad to be executed
- :  @param $args  arguments for cmd
- :  @return       the result of the execution
- : @error        An error is thrown if process can't be executed.
+ : Executes the specified string command in a separate process.
+ : Each of the strings in the sequence passed in as the second
+ : argument is passed as an argument to the executed command.
+ :
+ : @param $cmd command to be executed (without arguments)
+ : @param $args the arguments passed to the executed command (e.g. "-la")
+ :
+ : @return the result of the execution as an element as
+ :         shown in the documentation of this module. The exit-code
+ :         element returns the exit code of the child process.
+ :
+ : @error process:PROC01 if an error occurred while communicating 
+ :   with the executed process.
  :)
-declare %ann:sequential function process:exec (
-    $cmd as xs:string,
-    $args as xs:string*
-    ) as node() external;
+declare %ann:sequential function process:exec(
+  $cmd as xs:string,
+  $args as xs:string*
+) as element(process:result) external;

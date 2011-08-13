@@ -33,6 +33,7 @@
 #   endif
 #else
 #  include <unistd.h>
+#  include <wait.h>
 #endif
 
 #include <zorba/item_factory.h>
@@ -56,12 +57,17 @@ void create_result_node(
     int                 aExitCode,
     zorba::ItemFactory* aFactory)
 {
-  zorba::Item lResultQName = aFactory->createQName("", "result");
-  zorba::Item lExitCodeQName = aFactory->createQName("", "exit-code");
-  zorba::Item lOutputQName = aFactory->createQName("", "stdout");
-  zorba::Item lErrorQName = aFactory->createQName("", "stderr");
+  zorba::Item lResultQName =
+    aFactory->createQName("http://www.zorba-xquery.com/modules/process", "result");
+  zorba::Item lExitCodeQName =
+    aFactory->createQName("http://www.zorba-xquery.com/modules/process", "exit-code");
+  zorba::Item lOutputQName =
+    aFactory->createQName("http://www.zorba-xquery.com/modules/process", "stdout");
+  zorba::Item lErrorQName =
+    aFactory->createQName("http://www.zorba-xquery.com/modules/process", "stderr");
   zorba::Item lNullItem;
-  zorba::Item lTypeName = aFactory->createQName("http://www.w3.org/2001/XMLSchema", "untyped");
+  zorba::Item lTypeName =
+    aFactory->createQName("http://www.w3.org/2001/XMLSchema", "untyped");
 
   std::vector<std::pair<zorba::String, zorba::String> > lNSBindings;
 
@@ -105,8 +111,9 @@ void throw_last_error(const zorba::String& aFilename, unsigned int aLineNumber){
           (LPTSTR)&lpvMessageBuffer, 0, NULL);
   wsprintf(lErrorBuffer,TEXT("Process Error Code: %d - Message= %s"),GetLastError(), (TCHAR *)lpvMessageBuffer);
   LocalFree(lpvMessageBuffer);
-  Item lQName = ProcessModule::getItemFactory()->createQName("http://www.zorba-xquery.com/modules/process",
-      "XPTY0004");
+  Item lQName = ProcessModule::getItemFactory()->createQName(
+    "http://www.zorba-xquery.com/modules/process",
+    "PROC01");
 #ifdef UNICODE
   char error_str[1024];
   WideCharToMultiByte(CP_UTF8, 0, lErrorBuffer, -1, error_str, sizeof(error_str), NULL, NULL);
@@ -218,7 +225,10 @@ BOOL create_child_process(HANDLE aStdOutputPipe,HANDLE aStdErrorPipe,const std::
 *  run a process that executes the aCommand
 *  in a new console and reads the output
 */
-int run_process(const std::string& aCommand,std::ostringstream& aTargetOutStream,std::ostringstream& aTargetErrStream)
+int run_process(
+  const std::string& aCommand,
+  std::ostringstream& aTargetOutStream,
+  std::ostringstream& aTargetErrStream)
 {
   HANDLE lOutRead, lErrRead, lStdOut, lStdErr;
   SECURITY_ATTRIBUTES lSecurityAttributes;
@@ -235,8 +245,10 @@ int run_process(const std::string& aCommand,std::ostringstream& aTargetOutStream
       !CreatePipe(&lOutRead,&lStdOut,&lSecurityAttributes,1024*1024) // std::cout >> lOutRead
       || !CreatePipe(&lErrRead,&lStdErr,&lSecurityAttributes,1024*1024) // std::cerr >> lErrRead
     ){
-    Item lQName = ProcessModule::getItemFactory()->createQName("http://www.zorba-xquery.com/modules/process", "XPTY0004");
-    USER_EXCEPTION(lQName, "Couldn't create one of std::cout/std::cerr pipe for child process execution."
+    Item lQName = ProcessModule::getItemFactory()->createQName(
+      "http://www.zorba-xquery.com/modules/process", "PROC01");
+    throw USER_EXCEPTION(lQName,
+      "Couldn't create one of std::cout/std::cerr pipe for child process execution."
     );
   };
   
@@ -255,9 +267,9 @@ int run_process(const std::string& aCommand,std::ostringstream& aTargetOutStream
       std::stringstream lErrorMsg;
       lErrorMsg 
         << "Couldn't get exit code from child process. Executed command: '" << aCommand << "'.";
-      Item lQName = ProcessModule::getItemFactory()->createQName("http://www.zorba-xquery.com/modules/process", "XPTY0004");
-      USER_EXCEPTION(lQName, lErrorMsg.str().c_str()
-      );
+      Item lQName = ProcessModule::getItemFactory()->createQName(
+        "http://www.zorba-xquery.com/modules/process", "PROC01");
+      throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
     }
   
     CloseHandle(lChildProcessInfo.hProcess);
@@ -299,48 +311,51 @@ pid_t zorba_popen(const char *command, int *infp, int *outfp, int *errfp)
     pid_t pid;
 
     if (pipe(p_stdin) != 0 || pipe(p_stdout) != 0 || pipe(p_stderr) != 0)
-        return -1;
+      return -1;
 
     pid = fork();
 
     if (pid < 0)
-        return pid;
+      return pid;
     else if (pid == 0)
     {
-        close(p_stdin[WRITE]);
-        dup2(p_stdin[READ], 0);   // duplicate stdin
+      close(p_stdin[WRITE]);
+      dup2(p_stdin[READ], 0);   // duplicate stdin
 
-        close(p_stdout[READ]);
-        dup2(p_stdout[WRITE], 1); // duplicate stdout
+      close(p_stdout[READ]);
+      dup2(p_stdout[WRITE], 1); // duplicate stdout
 
-        close(p_stderr[READ]);
-        dup2(p_stderr[WRITE], 2); // duplicate stderr
+      close(p_stderr[READ]);
+      dup2(p_stderr[WRITE], 2); // duplicate stderr
 
-        execl("/bin/sh", "sh", "-c", command, NULL);
-        perror("execl");
-        exit(1);
+      execl("/bin/sh", "sh", "-c", command, NULL);
+      perror("execl"); // output the result to standard error
+      exit(errno);
     }
 
     if (infp == NULL)
-        close(p_stdin[WRITE]);
+      close(p_stdin[WRITE]);
     else
-        *infp = p_stdin[WRITE];
+      *infp = p_stdin[WRITE];
 
     if (outfp == NULL)
-        close(p_stdout[READ]);
+      close(p_stdout[READ]);
     else
-        *outfp = p_stdout[READ];
+      *outfp = p_stdout[READ];
 
     if (errfp == NULL)
-        close(p_stderr[READ]);
+      close(p_stderr[READ]);
     else
-        *errfp = p_stderr[READ];
+      *errfp = p_stderr[READ];
 
     close(p_stdin[READ]);   // We only write to the forks stdin anyway
     close(p_stdout[WRITE]); // and we only read from its stdout
     close(p_stderr[WRITE]); // and we only read from its stderr
 
-    return pid;
+    int  status;
+    waitpid(pid, &status, 0);
+
+    return status;
 }
 #endif
 
@@ -401,14 +416,11 @@ ExecFunction::evaluate(
   
   if (status != 0)
   {
-    
-  //  std::stringstream lErrorMsg;
-  //  lErrorMsg <<
-  //      "[FAILURE] command execution failed. Exit code: " << status << "." ;
-  //  throw zorba::ExternalFunctionData::createZorbaException(
-  //        XPTY0004,lErrorMsg.str().c_str(), __FILE__, __LINE__);
-    std::cerr << "[FAILURE] command execution failed. Exit code: " << status
-      << std::endl;
+    std::stringstream lErrorMsg;
+    lErrorMsg << "Failed to execute the command (" << status << ")";
+    Item lQName = ProcessModule::getItemFactory()->createQName(
+      "http://www.zorba-xquery.com/modules/process", "PROC01");
+    throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
   }
 
 #else //not WIN32
@@ -416,12 +428,16 @@ ExecFunction::evaluate(
   int outfp;
   int errfp;
   int status;
+  int code;
 
-  status=zorba_popen(lTmp.str().c_str(), NULL, &outfp, &errfp);
-  if ( status<=0 )
+  code = zorba_popen(lTmp.str().c_str(), NULL, &outfp, &errfp);
+  if ( code == -1 )
   {
-    std::cerr << "[FAILURE] command execution failed. Exit code: " << status
-      << std::endl;
+    std::stringstream lErrorMsg;
+    lErrorMsg << "Failed to execute the command (" << code << ")";
+    Item lQName = ProcessModule::getItemFactory()->createQName(
+      "http://www.zorba-xquery.com/modules/process", "PROC01");
+    throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
   }
   else
   {
@@ -443,14 +459,17 @@ ExecFunction::evaluate(
 
     if ( status < 0 )
     {
-      std::cerr << "[FAILURE] command execution failed. Exit code: " << errno
-        << std::endl;
+      std::stringstream lErrorMsg;
+      lErrorMsg << "Failed to close the err stream (" << status << ")";
+      Item lQName = ProcessModule::getItemFactory()->createQName(
+        "http://www.zorba-xquery.com/modules/process", "PROC01");
+      throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
     }
   }
 #endif // WIN32
 
   zorba::Item lResult;
-  create_result_node(lResult, lStdout.str(), lStderr.str(), status,
+  create_result_node(lResult, lStdout.str(), lStderr.str(), code,
                      theModule->getItemFactory());
 
   return zorba::ItemSequence_t(new zorba::SingletonItemSequence(lResult));
@@ -462,24 +481,8 @@ String ExecFunction::getOneStringArgument (const Arguments_t& aArgs, int aPos)
   Item lItem;
   Iterator_t  args_iter = aArgs[aPos]->getIterator();
   args_iter->open();
-  if (!args_iter->next(lItem))
-  {
-    std::stringstream lErrorMessage;
-    lErrorMessage << "An empty-sequence is not allowed as "
-                  << aPos << ". parameter.";
-    Item lQName = theModule->getItemFactory()->createQName("http://www.zorba-xquery.com/modules/process", "XPTY0004");
-    USER_EXCEPTION(lQName, lErrorMessage.str());
-  }
-
+  args_iter->next(lItem);
   zorba::String lTmpString = lItem.getStringValue();
-  if (args_iter->next(lItem))
-  {
-    std::stringstream lErrorMessage;
-    lErrorMessage << "A sequence of more then one item is not allowed as "
-                  << aPos << ". parameter.";
-    Item lQName = theModule->getItemFactory()->createQName("http://www.zorba-xquery.com/modules/process", "XPTY0004");
-    USER_EXCEPTION(lQName, lErrorMessage.str());
-  }
   args_iter->close();
   return lTmpString;
 }
@@ -509,13 +512,7 @@ void ProcessModule::destroy()
   delete this;
 }
 
-/*
-ProcessModule::~ProcessModule()
-{
-}
-*/
 ItemFactory* ProcessModule::theFactory = 0;
-
 
 } /* namespace processmodule */
 } /* namespace zorba */

@@ -9,15 +9,15 @@ import module namespace proc = "http://www.zorba-xquery.com/modules/process";
   
   let $result :=
     <result>
-      <out>{normalize-space(data($stdOutTest/stdout))}</out>
-      <err>{normalize-space(data($stdErrTest/stderr))}</err>
+      <out>{normalize-space(data($stdOutTest/proc:stdout))}</out>
+      <err>{normalize-space(data($stdErrTest/proc:stderr))}</err>
     </result>
   return 
     if (contains($result/err/text(),"is not recognized as an internal or external command"))
     then
       <result>
-        <out>{normalize-space(data($stdOutWinTest/stdout))}</out>
-        <err>{normalize-space(data($stdErrWinTest/stderr))}</err>
+        <out>{normalize-space(data($stdOutWinTest/proc:stdout))}</out>
+        <err>{normalize-space(data($stdErrWinTest/proc:stderr))}</err>
       </result>
     else
       $result
