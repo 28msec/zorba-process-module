@@ -33,7 +33,11 @@
 #   endif
 #else
 #  include <unistd.h>
-#  include <wait.h>
+#  ifdef __APPLE__
+#    include <sys/wait.h>
+#  else
+#    include <wait.h>
+#  endif
 #endif
 
 #include <zorba/item_factory.h>
@@ -412,12 +416,12 @@ ExecFunction::evaluate(
 
 #ifdef WIN32
   std::string lCommandLineString=lTmp.str();
-  int status = run_process(lCommandLineString,lStdout,lStderr);
+  int code = run_process(lCommandLineString,lStdout,lStderr);
   
-  if (status != 0)
+  if (code != 0)
   {
     std::stringstream lErrorMsg;
-    lErrorMsg << "Failed to execute the command (" << status << ")";
+    lErrorMsg << "Failed to execute the command (" << code << ")";
     Item lQName = ProcessModule::getItemFactory()->createQName(
       "http://www.zorba-xquery.com/modules/process", "PROC01");
     throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
