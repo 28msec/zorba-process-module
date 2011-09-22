@@ -355,11 +355,8 @@ pid_t zorba_popen(const char *command, int *infp, int *outfp, int *errfp)
     close(p_stdin[READ]);   // We only write to the forks stdin anyway
     close(p_stdout[WRITE]); // and we only read from its stdout
     close(p_stderr[WRITE]); // and we only read from its stderr
-
-    int  status;
-    waitpid(pid, &status, 0);
-
-    return status;
+        
+    return pid;
 }
 #endif
 
@@ -373,6 +370,7 @@ ExecFunction::evaluate(
 {
   std::string lCommand;
   std::vector<std::string> lArgs;
+  int exit_code = 0;
 
   lCommand = getOneStringArgument(aArgs, 0).c_str();
 
@@ -432,19 +430,20 @@ ExecFunction::evaluate(
   int outfp;
   int errfp;
   int status;
-  int code;
+  pid_t pid;
 
-  code = zorba_popen(lTmp.str().c_str(), NULL, &outfp, &errfp);
-  if ( code == -1 )
+  pid = zorba_popen(lTmp.str().c_str(), NULL, &outfp, &errfp);
+  if ( pid == -1 )
   {
     std::stringstream lErrorMsg;
-    lErrorMsg << "Failed to execute the command (" << code << ")";
+    lErrorMsg << "Failed to execute the command (" << pid << ")";
     Item lQName = ProcessModule::getItemFactory()->createQName(
       "http://www.zorba-xquery.com/modules/process", "PROC01");
     throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
   }
   else
   {
+std::cout << "Process id: " << pid << std::endl; std::cout.flush();
     char lBuf[PATH_MAX];
     ssize_t length = 0;
     while ( (length=read(outfp, lBuf, PATH_MAX)) > 0 )
@@ -469,11 +468,45 @@ ExecFunction::evaluate(
         "http://www.zorba-xquery.com/modules/process", "PROC01");
       throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
     }
+
+    int  stat = 0;
+    
+    waitpid(pid, &stat, 0);
+    /*pid_t w;
+    do 
+    {
+      w = waitpid(pid, &stat, WUNTRACED | WCONTINUED);
+      if (w == -1) 
+      { 
+          perror("waitpid"); 
+          exit(EXIT_FAILURE); 
+      }
+
+      if (WIFEXITED(stat)) 
+      {
+          printf("exited, status=%d\n", WEXITSTATUS(stat));
+      } 
+      else if (WIFSIGNALED(stat)) 
+      {
+          printf("killed by signal %d\n", WTERMSIG(stat));
+      }
+      else if (WIFSTOPPED(stat)) 
+      {
+          printf("stopped by signal %d\n", WSTOPSIG(stat));
+      } 
+      else if (WIFCONTINUED(stat)) 
+      {
+          printf("continued\n");
+      }
+    } while (!WIFEXITED(stat) && !WIFSIGNALED(stat));
+    */
+    exit_code = WEXITSTATUS(stat);
+
   }
 #endif // WIN32
 
   zorba::Item lResult;
-  create_result_node(lResult, lStdout.str(), lStderr.str(), code,
+  create_result_node(lResult, lStdout.str(), lStderr.str(), exit_code,
                      theModule->getItemFactory());
 
   return zorba::ItemSequence_t(new zorba::SingletonItemSequence(lResult));
