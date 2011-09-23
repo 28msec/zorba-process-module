@@ -443,7 +443,6 @@ ExecFunction::evaluate(
   }
   else
   {
-std::cout << "Process id: " << pid << std::endl; std::cout.flush();
     char lBuf[PATH_MAX];
     ssize_t length = 0;
     while ( (length=read(outfp, lBuf, PATH_MAX)) > 0 )
