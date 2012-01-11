@@ -73,7 +73,7 @@ void create_result_node(
   zorba::Item lTypeName =
     aFactory->createQName("http://www.w3.org/2001/XMLSchema", "untyped");
 
-  std::vector<std::pair<zorba::String, zorba::String> > lNSBindings;
+  zorba::NsBindings lNSBindings;
 
   // root node called result
   aResult = aFactory->createElementNode(
