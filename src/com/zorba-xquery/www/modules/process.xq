@@ -41,7 +41,7 @@ xquery version "3.0";
  :)
 module namespace process = "http://www.zorba-xquery.com/modules/process";
 
-declare namespace ann = "http://www.zorba-xquery.com/annotations";
+declare namespace an = "http://www.zorba-xquery.com/annotations";
 
 declare namespace ver = "http://www.zorba-xquery.com/options/versioning";
 declare option ver:module-version "1.0";
@@ -60,7 +60,7 @@ declare option ver:module-version "1.0";
  : @error process:PROC01 if an error occurred while communicating 
  :   with the executed process.
  :)
-declare %ann:sequential function process:exec(
+declare %an:sequential function process:exec(
   $cmd as xs:string
 ) as element(process:result) external;
 
@@ -79,7 +79,7 @@ declare %ann:sequential function process:exec(
  : @error process:PROC01 if an error occurred while communicating 
  :   with the executed process.
  :)
-declare %ann:sequential function process:exec(
+declare %an:sequential function process:exec(
   $cmd as xs:string,
   $args as xs:string*
 ) as element(process:result) external;
