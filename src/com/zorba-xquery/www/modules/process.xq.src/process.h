@@ -48,7 +48,7 @@ protected:
   FuncMap_t theFunctions;
 
 public:
-  virtual ~ProcessModule() {}
+  virtual ~ProcessModule();
 
   virtual zorba::String getURI() const
   { return "http://www.zorba-xquery.com/modules/process"; }
