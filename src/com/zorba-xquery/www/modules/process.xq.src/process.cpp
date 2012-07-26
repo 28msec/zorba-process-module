@@ -525,6 +525,15 @@ String ExecFunction::getOneStringArgument (const Arguments_t& aArgs, int aPos)
 
 /******************************************************************************
  *****************************************************************************/
+ProcessModule::~ProcessModule()
+{
+  for (FuncMap_t::const_iterator lIter = theFunctions.begin();
+       lIter != theFunctions.end(); ++lIter) {
+    delete lIter->second;
+  }
+  theFunctions.clear();
+}
+
 zorba::ExternalFunction*
 ProcessModule::getExternalFunction(const zorba::String& aLocalname)
 {
