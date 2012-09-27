@@ -21,22 +21,22 @@ xquery version "3.0";
  : (i.e. exit code, result on standard out and error).
  :
  : Example:
- :<pre class="brush: xquery;">
+ :<pre class="ace-static" ace-mode="xquery">
  :  import module namespace proc = "http://www.zorba-xquery.com/modules/process";
  :  proc:exec("ls")
  :</pre>
  :
  : Potential result:
- : <pre>
- : &lt;result xmlns="http://www.zorba-xquery.com/modules/process">
- :   &lt;stdout>myfile.txt&lt;/stout>
- :   &lt;stderr/>
- :   &lt;exit-code>0&lt;/exit-code>
- : &lt;/result>
- : </pre>
+ : <pre class="ace-static" ace-mode="xquery"><![CDATA[
+ : <result xmlns="http://www.zorba-xquery.com/modules/process">
+ :   <stdout>myfile.txt</stout>
+ :   <stderr/>
+ :   <exit-code>0</exit-code>
+ : </result>
+ : ]]></pre>
  :
  : @author Cezar Andrei
- : @project external
+ : @project Zorba/IO/Process
  :
  :)
 module namespace process = "http://www.zorba-xquery.com/modules/process";
