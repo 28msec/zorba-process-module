@@ -492,7 +492,7 @@ ExecFunction::evaluate(
     }
     else if (WIFSTOPPED(stat)) 
     {
-        exit_code = -2000 - WTERMSIG(stat);
+        exit_code = -2000 - WSTOPSIG(stat);
     }
     else
     {
