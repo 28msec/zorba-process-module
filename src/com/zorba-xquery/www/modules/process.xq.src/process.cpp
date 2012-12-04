@@ -257,7 +257,7 @@ int run_process(
   };
   
   //start child process
-  BOOL ok=create_child_process(lStdOut,lStdErr,aCommand,lChildProcessInfo);
+  BOOL ok = create_child_process(lStdOut,lStdErr,aCommand,lChildProcessInfo);
   if(ok==TRUE)
   {
 
@@ -424,6 +424,7 @@ ExecFunction::evaluate(
       "http://www.zorba-xquery.com/modules/process", "PROC01");
     throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
   }
+  exit_code = code;
 
 #else //not WIN32
 
@@ -470,36 +471,33 @@ ExecFunction::evaluate(
 
     int  stat = 0;
     
-    waitpid(pid, &stat, 0);
-    /*pid_t w;
-    do 
-    {
-      w = waitpid(pid, &stat, WUNTRACED | WCONTINUED);
-      if (w == -1) 
-      { 
-          perror("waitpid"); 
-          exit(EXIT_FAILURE); 
-      }
+    pid_t w = waitpid(pid, &stat, 0);
+    
+    if (w == -1) 
+    { 
+        std::stringstream lErrorMsg;
+        lErrorMsg << "Failed to wait for child process ";
+        Item lQName = ProcessModule::getItemFactory()->createQName(
+          "http://www.zorba-xquery.com/modules/process", "PROC01");
+        throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());          
+    }
 
-      if (WIFEXITED(stat)) 
-      {
-          printf("exited, status=%d\n", WEXITSTATUS(stat));
-      } 
-      else if (WIFSIGNALED(stat)) 
-      {
-          printf("killed by signal %d\n", WTERMSIG(stat));
-      }
-      else if (WIFSTOPPED(stat)) 
-      {
-          printf("stopped by signal %d\n", WSTOPSIG(stat));
-      } 
-      else if (WIFCONTINUED(stat)) 
-      {
-          printf("continued\n");
-      }
-    } while (!WIFEXITED(stat) && !WIFSIGNALED(stat));
-    */
-    exit_code = WEXITSTATUS(stat);
+    if (WIFEXITED(stat)) 
+    {
+        exit_code = WEXITSTATUS(stat);
+    } 
+    else if (WIFSIGNALED(stat)) 
+    {
+        exit_code = -1000 - WTERMSIG(stat);
+    }
+    else if (WIFSTOPPED(stat)) 
+    {
+        exit_code = -2000 - WTERMSIG(stat);
+    }
+    else
+    {
+        exit_code = -1999;
+    } 
 
   }
 #endif // WIN32
