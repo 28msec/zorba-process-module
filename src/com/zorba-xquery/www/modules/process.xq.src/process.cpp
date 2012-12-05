@@ -413,8 +413,8 @@ ExecFunction::evaluate(
   std::ostringstream lStderr;
 
 #ifdef WIN32
-  std::string lCommandLineString=lTmp.str();
-  int code = run_process(lCommandLineString,lStdout,lStderr);
+  std::string lCommandLineString = lTmp.str();
+  int code = run_process(lCommandLineString, lStdout, lStderr);
   
   if (code != 0)
   {
@@ -484,20 +484,26 @@ ExecFunction::evaluate(
 
     if (WIFEXITED(stat)) 
     {
+        //std::cout << " WEXITSTATUS : " << WEXITSTATUS(stat) << std::endl; std::cout.flush();
         exit_code = WEXITSTATUS(stat);
     } 
     else if (WIFSIGNALED(stat)) 
     {
-        exit_code = -1000 - WTERMSIG(stat);
+        //std::cout << " WTERMSIG : " << WTERMSIG(stat) << std::endl; std::cout.flush();
+        exit_code = 128 + WTERMSIG(stat);
     }
     else if (WIFSTOPPED(stat)) 
     {
-        exit_code = -2000 - WSTOPSIG(stat);
+        //std::cout << " STOPSIG : " << WSTOPSIG(stat) << std::endl; std::cout.flush();
+        exit_code = 128 + WSTOPSIG(stat);
     }
     else
     {
-        exit_code = -1999;
-    } 
+        //std::cout << " else : " << std::endl; std::cout.flush();
+        exit_code = 255;
+    }
+    
+    //std::cout << " exit_code : " << exit_code << std::endl; std::cout.flush();
 
   }
 #endif // WIN32
