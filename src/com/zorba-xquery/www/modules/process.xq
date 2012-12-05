@@ -57,8 +57,7 @@ declare option ver:module-version "1.0";
  :         shown in the documentation of this module. The exit-code
  :         element returns the exit code of the child process.
  : For POSIX compliant platforms: returns the process exit code. If process is 
- : terminated: (-1000) - termination signal code. If process is stoped:
- : (-2000) - stop signal code or -1999 othewise.
+ : terminated or stopped: 128 + termination signal code. 
  : For Windows platforms: returns the return value of the process or the exit 
  : or terminate process specified value.
  :
@@ -81,8 +80,7 @@ declare %an:sequential function process:exec(
  :         shown in the documentation of this module. The exit-code
  :         element returns the exit code of the child process.
  : For POSIX compliant platforms: returns the process exit code. If process is 
- : terminated: (-1000) - termination signal code. If process is stoped:
- : (-2000) - stop signal code or -1999 othewise.
+ : terminated or stopped: 128 + termination signal code. 
  : For Windows platforms: returns the return value of the process or the exit 
  : or terminate process specified value.
  :
