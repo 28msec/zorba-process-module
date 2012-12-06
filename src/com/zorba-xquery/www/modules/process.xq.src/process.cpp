@@ -257,7 +257,7 @@ int run_process(
   };
   
   //start child process
-  BOOL ok=create_child_process(lStdOut,lStdErr,aCommand,lChildProcessInfo);
+  BOOL ok = create_child_process(lStdOut,lStdErr,aCommand,lChildProcessInfo);
   if(ok==TRUE)
   {
 
@@ -413,8 +413,8 @@ ExecFunction::evaluate(
   std::ostringstream lStderr;
 
 #ifdef WIN32
-  std::string lCommandLineString=lTmp.str();
-  int code = run_process(lCommandLineString,lStdout,lStderr);
+  std::string lCommandLineString = lTmp.str();
+  int code = run_process(lCommandLineString, lStdout, lStderr);
   
   if (code != 0)
   {
@@ -424,6 +424,7 @@ ExecFunction::evaluate(
       "http://www.zorba-xquery.com/modules/process", "PROC01");
     throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
   }
+  exit_code = code;
 
 #else //not WIN32
 
@@ -470,36 +471,39 @@ ExecFunction::evaluate(
 
     int  stat = 0;
     
-    waitpid(pid, &stat, 0);
-    /*pid_t w;
-    do 
-    {
-      w = waitpid(pid, &stat, WUNTRACED | WCONTINUED);
-      if (w == -1) 
-      { 
-          perror("waitpid"); 
-          exit(EXIT_FAILURE); 
-      }
+    pid_t w = waitpid(pid, &stat, 0);
+    
+    if (w == -1) 
+    { 
+        std::stringstream lErrorMsg;
+        lErrorMsg << "Failed to wait for child process ";
+        Item lQName = ProcessModule::getItemFactory()->createQName(
+          "http://www.zorba-xquery.com/modules/process", "PROC01");
+        throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());          
+    }
 
-      if (WIFEXITED(stat)) 
-      {
-          printf("exited, status=%d\n", WEXITSTATUS(stat));
-      } 
-      else if (WIFSIGNALED(stat)) 
-      {
-          printf("killed by signal %d\n", WTERMSIG(stat));
-      }
-      else if (WIFSTOPPED(stat)) 
-      {
-          printf("stopped by signal %d\n", WSTOPSIG(stat));
-      } 
-      else if (WIFCONTINUED(stat)) 
-      {
-          printf("continued\n");
-      }
-    } while (!WIFEXITED(stat) && !WIFSIGNALED(stat));
-    */
-    exit_code = WEXITSTATUS(stat);
+    if (WIFEXITED(stat)) 
+    {
+        //std::cout << " WEXITSTATUS : " << WEXITSTATUS(stat) << std::endl; std::cout.flush();
+        exit_code = WEXITSTATUS(stat);
+    } 
+    else if (WIFSIGNALED(stat)) 
+    {
+        //std::cout << " WTERMSIG : " << WTERMSIG(stat) << std::endl; std::cout.flush();
+        exit_code = 128 + WTERMSIG(stat);
+    }
+    else if (WIFSTOPPED(stat)) 
+    {
+        //std::cout << " STOPSIG : " << WSTOPSIG(stat) << std::endl; std::cout.flush();
+        exit_code = 128 + WSTOPSIG(stat);
+    }
+    else
+    {
+        //std::cout << " else : " << std::endl; std::cout.flush();
+        exit_code = 255;
+    }
+    
+    //std::cout << " exit_code : " << exit_code << std::endl; std::cout.flush();
 
   }
 #endif // WIN32
