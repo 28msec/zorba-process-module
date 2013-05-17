@@ -50,7 +50,8 @@
 
 // Provde the execvpe() function if it does not exist on the platform
 #ifndef WIN32
-#ifndef __USE_GNU
+#ifndef _GNU_SOURCE
+#error "Verygood"
 int execvpe(const char *program, char **argv, char **envp)
 {
   char **saved = environ;
