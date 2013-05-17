@@ -74,12 +74,13 @@ public:
 class ExecFunction : public ContextualExternalFunction
 {
 public:
-  ExecFunction(const ProcessModule* aModule) : theModule(aModule) {}
+  ExecFunction(const ProcessModule* aModule, bool aExecProgram = false) 
+    : theModule(aModule), theIsExecProgram(aExecProgram) {}
 
   virtual ~ExecFunction() {}
 
   virtual zorba::String
-  getLocalName() const { return "exec"; }
+  getLocalName() const { if (theIsExecProgram) return "exec"; else return "exec-command"; }
 
   virtual zorba::ItemSequence_t
   evaluate(const Arguments_t&,
@@ -93,11 +94,13 @@ public:
 
 protected:
   const ProcessModule* theModule;
+  
+  bool theIsExecProgram; // if set to true, will use the execvpe() version of the system function
+                         // if set to false, will build a command string and pass it to 
+                         // either "bash" or "cmd.exe" (through execl() on Linux)
 
   String getOneStringArgument (const Arguments_t& aArgs, int index) const;
 };
-
-
 
 } /* namespace processmodule */
 } /* namespace zorba */
