@@ -124,6 +124,7 @@ declare %an:sequential function process:exec(
  :
  : @param $filename the name of program to be executed 
  : @param $args arguments to be passed to the executable 
+ : @param $env environment variables for the executable
  :
  : @return the result of the execution as an object as
  :         shown in the documentation of this module. The exit-code
