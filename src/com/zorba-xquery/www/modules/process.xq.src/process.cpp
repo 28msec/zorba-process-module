@@ -25,13 +25,15 @@
 
 #ifdef WIN32
 #  include <windows.h>
-
 #  ifndef NDEBUG
 #    define _CRTDBG_MAP_ALLOC
 #    include <stdlib.h>
 #    include <crtdbg.h>
 #   endif
 #else
+#  ifndef __USE_GNU
+#    define __USE_GNU
+#  endif
 #  include <unistd.h>
 #  ifdef __APPLE__
 #    include <sys/wait.h>
