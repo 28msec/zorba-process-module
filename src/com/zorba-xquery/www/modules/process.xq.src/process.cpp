@@ -31,9 +31,6 @@
 #    include <crtdbg.h>
 #   endif
 #else
-#  ifndef __USE_GNU
-#    define __USE_GNU
-#  endif
 #  include <unistd.h>
 #  ifdef __APPLE__
 #    include <sys/wait.h>
@@ -50,6 +47,22 @@
 #include <zorba/file.h>
 
 #include "process.h"
+
+// Provde the execvpe() function if it does not exist on the platform
+#ifndef WIN32
+#ifndef __USE_GNU
+int execvpe(const char *program, char **argv, char **envp)
+{
+  char **saved = environ;
+  int rc;
+  environ = envp;
+  rc = execvp(program, argv);
+  environ = saved;
+  return rc;
+}
+#endif
+#endif
+
 
 namespace zorba {
 namespace processmodule {
