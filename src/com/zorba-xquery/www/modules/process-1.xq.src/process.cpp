@@ -25,6 +25,7 @@
 
 #ifdef WIN32
 #  include <windows.h>
+
 #  ifndef NDEBUG
 #    define _CRTDBG_MAP_ALLOC
 #    include <stdlib.h>
@@ -47,20 +48,6 @@
 #include <zorba/file.h>
 
 #include "process.h"
-
-// Provde the execvpe() function since some platforms don't have it
-#ifndef WIN32
-int execvpe(const char *program, char **argv, char **envp)
-{
-  char **saved = environ;
-  int rc;
-  environ = envp;
-  rc = execvp(program, argv);
-  environ = saved;
-  return rc;
-}
-#endif
-
 
 namespace zorba {
 namespace processmodule {
@@ -111,28 +98,6 @@ void create_result_node(
   std::ostringstream lExitCodeString;
   lExitCodeString << aExitCode;
   aFactory->createTextNode(lExitCode, lExitCodeString.str());
-}
-
-void create_result_object(
-    zorba::Item&        aResult,
-    const std::string&  aStandardOut,
-    const std::string&  aErrorOut,
-    int                 aExitCode,
-    zorba::ItemFactory* aFactory)
-{  
-  std::vector<std::pair<zorba::Item,zorba::Item> > pairs;
-  
-  pairs.push_back(std::pair<zorba::Item,zorba::Item>(aFactory->createString("exit-code"), aFactory->createInt(aExitCode)));
-  pairs.push_back(std::pair<zorba::Item,zorba::Item>(aFactory->createString("stdout"), aFactory->createString(aStandardOut)));
-  pairs.push_back(std::pair<zorba::Item,zorba::Item>(aFactory->createString("stderr"), aFactory->createString(aErrorOut)));
-  
-  aResult = aFactory->createJSONObject(pairs);  
-}
-
-void free_char_vector(std::vector<char*> argv)
-{
-  for (unsigned int i=0; i<argv.size(); i++)
-    free(argv[i]);    
 }
 
 #ifdef WIN32
@@ -342,7 +307,7 @@ int run_process(
 #define READ  0
 #define WRITE 1
 
-pid_t exec_helper(int *infp, int *outfp, int *errfp, const char *command, char* argv[], char* env[])
+pid_t zorba_popen(const char *command, int *infp, int *outfp, int *errfp)
 {
     int p_stdin[2];
     int p_stdout[2];
@@ -367,13 +332,7 @@ pid_t exec_helper(int *infp, int *outfp, int *errfp, const char *command, char* 
       close(p_stderr[READ]);
       dup2(p_stderr[WRITE], 2); // duplicate stderr
 
-      if (command)
-        execl("/bin/sh", "sh", "-c", command, NULL);
-      else if (env == NULL)      
-        execvp(argv[0], argv);
-      else
-        execvpe(argv[0], argv, env);      
-        
+      execl("/bin/sh", "sh", "-c", command, NULL);
       perror("execl"); // output the result to standard error
       exit(errno);
     }
@@ -399,23 +358,10 @@ pid_t exec_helper(int *infp, int *outfp, int *errfp, const char *command, char* 
         
     return pid;
 }
-
 #endif
-
 
 /******************************************************************************
  *****************************************************************************/
-String ExecFunction::getOneStringArgument (const Arguments_t& aArgs, int aPos) const
-{
-  Item lItem;
-  Iterator_t  args_iter = aArgs[aPos]->getIterator();
-  args_iter->open();
-  args_iter->next(lItem);
-  zorba::String lTmpString = lItem.getStringValue();
-  args_iter->close();
-  return lTmpString;
-}
-
 zorba::ItemSequence_t
 ExecFunction::evaluate(
   const Arguments_t& aArgs,
@@ -424,7 +370,6 @@ ExecFunction::evaluate(
 {
   std::string lCommand;
   std::vector<std::string> lArgs;
-  std::vector<std::string> lEnv;
   int exit_code = 0;
 
   lCommand = getOneStringArgument(aArgs, 0).c_str();
@@ -434,19 +379,11 @@ ExecFunction::evaluate(
     zorba::Item lArg;
     Iterator_t arg1_iter = aArgs[1]->getIterator();
     arg1_iter->open();
-    while (arg1_iter->next(lArg))    
+    while (arg1_iter->next(lArg))
+    {
       lArgs.push_back(lArg.getStringValue().c_str());
+    }
     arg1_iter->close();
-  }
-  
-  if (aArgs.size() > 2)
-  {
-    zorba::Item lArg;
-    Iterator_t arg1_iter = aArgs[2]->getIterator();
-    arg1_iter->open();
-    while (arg1_iter->next(lArg))    
-      lEnv.push_back(lArg.getStringValue().c_str());
-    arg1_iter->close();    
   }
 
   std::ostringstream lTmp;
@@ -495,38 +432,18 @@ ExecFunction::evaluate(
   int errfp;
   int status;
   pid_t pid;
-  
-  std::vector<char*> argv(lArgs.size()+2, NULL);
-  std::vector<char*> env(lEnv.size()+1, NULL);
 
-  try
+  pid = zorba_popen(lTmp.str().c_str(), NULL, &outfp, &errfp);
+  if ( pid == -1 )
   {
-    if (theIsExecProgram)
-    {
-      argv[0] = strdup(lCommand.c_str());
-      for (unsigned int i=0; i<lArgs.size(); i++)
-        argv[i+1] = strdup(lArgs[i].c_str()); 
-      
-      for (unsigned int i=0; i<lEnv.size(); i++)
-        env[i] = strdup(lEnv[i].c_str());
-      
-      pid = exec_helper(NULL, &outfp, &errfp, NULL, argv.data(), lEnv.size() ? env.data() : NULL);
-    }
-    else
-    {
-      pid = exec_helper(NULL, &outfp, &errfp, lTmp.str().c_str(), argv.data(), NULL);
-    }
-    
-    if ( pid == -1 )
-    {
-      std::stringstream lErrorMsg;
-      lErrorMsg << "Failed to execute the command (" << pid << ")";
-      Item lQName = ProcessModule::getItemFactory()->createQName(
-            "http://www.zorba-xquery.com/modules/process", "PROC01");
-      throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
-      return NULL;
-    }
-  
+    std::stringstream lErrorMsg;
+    lErrorMsg << "Failed to execute the command (" << pid << ")";
+    Item lQName = ProcessModule::getItemFactory()->createQName(
+      "http://www.zorba-xquery.com/modules/process", "PROC01");
+    throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
+  }
+  else
+  {
     char lBuf[PATH_MAX];
     ssize_t length = 0;
     while ( (length=read(outfp, lBuf, PATH_MAX)) > 0 )
@@ -587,23 +504,28 @@ ExecFunction::evaluate(
     }
     
     //std::cout << " exit_code : " << exit_code << std::endl; std::cout.flush();
-    free_char_vector(argv);
-    free_char_vector(env);
-  }
-  catch (...)
-  {
-    free_char_vector(argv);
-    free_char_vector(env);
-    throw;
+
   }
 #endif // WIN32
 
   zorba::Item lResult;
-  create_result_object(lResult, lStdout.str(), lStderr.str(), exit_code,
-                       theModule->getItemFactory());  
+  create_result_node(lResult, lStdout.str(), lStderr.str(), exit_code,
+                     theModule->getItemFactory());
+
   return zorba::ItemSequence_t(new zorba::SingletonItemSequence(lResult));
 }
 
+String ExecFunction::getOneStringArgument (const Arguments_t& aArgs, int aPos)
+  const
+{
+  Item lItem;
+  Iterator_t  args_iter = aArgs[aPos]->getIterator();
+  args_iter->open();
+  args_iter->next(lItem);
+  zorba::String lTmpString = lItem.getStringValue();
+  args_iter->close();
+  return lTmpString;
+}
 
 /******************************************************************************
  *****************************************************************************/
@@ -623,13 +545,9 @@ ProcessModule::getExternalFunction(const zorba::String& aLocalname)
   zorba::ExternalFunction*& lFunc = theFunctions[aLocalname];
   if (lFind == theFunctions.end())
   {
-    if (aLocalname.compare("exec-command") == 0)
+    if (!aLocalname.compare("exec"))
     {
       lFunc = new ExecFunction(this);
-    }
-    else if (aLocalname.compare("exec") == 0)
-    {
-      lFunc = new ExecFunction(this, true);
     }
   }
   return lFunc;

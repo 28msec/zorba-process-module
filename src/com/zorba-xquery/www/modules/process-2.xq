@@ -1,7 +1,7 @@
 xquery version "3.0";
 
 (:
- : Copyright 2006-2009 The FLWOR Foundation.
+ : Copyright 2006-2013 The FLWOR Foundation.
  :
  : Licensed under the Apache License, Version 2.0 (the "License");
  : you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ xquery version "3.0";
  : ]]></pre>
  :
  : The exec-command() set of functions allows execution of commands through the operating
- : system's command line interpreter, such as "sh" on Linux or "cmd.exe" on Windows. 
+ : system's command line interpreter, such as "sh" on Unix systems or "cmd.exe" on Windows. 
  :
  : @author Cezar Andrei, Nicolae Brinza
  : @project Zorba/IO/Process
@@ -54,7 +54,7 @@ declare option ver:module-version "2.0";
  : Executes the specified program in a separate process.
  : This function does not allow arguments to be passed to
  : the command. The $filename parameter can contain the full path to the 
- : executable. On Linux systems,  if the specified filename does not contain 
+ : executable. On Unix systems,  if the specified filename does not contain 
  : a slash "/", the function duplicates the actions of the shell in searching 
  : for an executable file. The file is sought in the colon-separated list of 
  : directory pathnames specified in the PATH environment variable. If this 
@@ -81,7 +81,7 @@ declare %an:sequential function process:exec(
 (:~
  : Executes the specified program in a separate process. 
  : The $filename parameter can contain the full path to the 
- : executable. On Linux systems,  if the specified filename does not contain 
+ : executable. On Unix systems,  if the specified filename does not contain 
  : a slash "/", the function duplicates the actions of the shell in searching 
  : for an executable file. The file is sought in the colon-separated list of 
  : directory pathnames specified in the PATH environment variable. If this 
@@ -111,7 +111,7 @@ declare %an:sequential function process:exec(
 (:~
  : Executes the specified program in a separate process. 
  : The $filename parameter can contain the full path to the 
- : executable. On Linux systems,  if the specified filename does not contain 
+ : executable. On Unix systems,  if the specified filename does not contain 
  : a slash "/", the function duplicates the actions of the shell in searching 
  : for an executable file. The file is sought in the colon-separated list of 
  : directory pathnames specified in the PATH environment variable. If this 
