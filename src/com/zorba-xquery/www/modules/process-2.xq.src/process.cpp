@@ -67,52 +67,6 @@ namespace processmodule {
 
 /******************************************************************************
  *****************************************************************************/
-void create_result_node(
-    zorba::Item&        aResult,
-    const std::string&  aStandardOut,
-    const std::string&  aErrorOut,
-    int                 aExitCode,
-    zorba::ItemFactory* aFactory)
-{
-  zorba::Item lResultQName =
-    aFactory->createQName("http://www.zorba-xquery.com/modules/process", "result");
-  zorba::Item lExitCodeQName =
-    aFactory->createQName("http://www.zorba-xquery.com/modules/process", "exit-code");
-  zorba::Item lOutputQName =
-    aFactory->createQName("http://www.zorba-xquery.com/modules/process", "stdout");
-  zorba::Item lErrorQName =
-    aFactory->createQName("http://www.zorba-xquery.com/modules/process", "stderr");
-  zorba::Item lNullItem;
-  zorba::Item lTypeName =
-    aFactory->createQName("http://www.w3.org/2001/XMLSchema", "untyped");
-
-  zorba::NsBindings lNSBindings;
-
-  // root node called result
-  aResult = aFactory->createElementNode(
-      lNullItem, lResultQName, lTypeName, false, false, lNSBindings);
-
-  // <result><output> aStandardOut </output></result>
-  zorba::Item lOutput;
-  lOutput = aFactory->createElementNode(
-      aResult, lOutputQName, lTypeName, true, false, lNSBindings);
-  aFactory->createTextNode(lOutput, aStandardOut);
-
-  // <result><error> aErrorOut </error></result>
-  zorba::Item lError;
-  lError = aFactory->createElementNode(
-      aResult, lErrorQName, lTypeName, true, false, lNSBindings);
-  aFactory->createTextNode(lError, aErrorOut);
-
-  // <result><exit-code> aExitCode </exit-code></result>
-  zorba::Item lExitCode;
-  lExitCode = aFactory->createElementNode(
-      aResult, lExitCodeQName, lTypeName, true, false, lNSBindings);
-  std::ostringstream lExitCodeString;
-  lExitCodeString << aExitCode;
-  aFactory->createTextNode(lExitCode, lExitCodeString.str());
-}
-
 void create_result_object(
     zorba::Item&        aResult,
     const std::string&  aStandardOut,
