@@ -329,7 +329,20 @@ pid_t exec_helper(int *infp, int *outfp, int *errfp, const char *command, char* 
         execvpe(argv[0], argv, env);      
         
       perror("execl"); // output the result to standard error
-      exit(errno);
+      
+      // TODO:
+      // Currently, if the child process exits with an error, the following happens:
+      // -- exit(errno) is called
+      // -- static object destruction ocurrs
+      // -- Zorba store is destroyed in the child process and this leaks several URIs 
+      //    and prints error messages to stderr. An exception is thrown and this overwrites
+      //    the exit code of the invoked process.
+      //
+      // Until a proper solution is found, the child fork() process will call abort(), which
+      // will not trigger static object destruction.
+            
+      abort();
+      // exit(errno);
     }
 
     if (infp == NULL)
