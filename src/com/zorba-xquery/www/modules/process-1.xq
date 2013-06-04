@@ -19,13 +19,13 @@ xquery version "3.0";
 (:~
  : This module provides functions to create a native process and return the result
  : (i.e. exit code, result on standard out and error).
- :
+ : <p>
  : Example:
  :<pre class="ace-static" ace-mode="xquery">
  :  import module namespace proc = "http://www.zorba-xquery.com/modules/process";
  :  proc:exec("ls")
  :</pre>
- :
+ : <p>
  : Potential result:
  : <pre class="ace-static" ace-mode="xquery"><![CDATA[
  : <result xmlns="http://www.zorba-xquery.com/modules/process">

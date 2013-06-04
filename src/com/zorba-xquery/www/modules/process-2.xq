@@ -1,4 +1,4 @@
-xquery version "3.0";
+jsoniq version "3.0";
 
 (:
  : Copyright 2006-2013 The FLWOR Foundation.
@@ -19,13 +19,13 @@ xquery version "3.0";
 (:~
  : This module provides functions to create a native process and return the result
  : (i.e. exit code, result on standard out and error).
- :
+ : <p>
  : Example:
  :<pre class="ace-static" ace-mode="xquery">
  :  import module namespace proc = "http://www.zorba-xquery.com/modules/process";
  :  proc:exec("ls")
  :</pre>
- :
+ : <p>
  : Potential result:
  : <pre class="ace-static" ace-mode="xquery"><![CDATA[
  : {
@@ -34,7 +34,7 @@ xquery version "3.0";
  :   "stderr": ""
  : }
  : ]]></pre>
- :
+ : <p>
  : The exec-command() set of functions allows execution of commands through the operating
  : system's command line interpreter, such as "sh" on Unix systems or "cmd.exe" on Windows. 
  :
@@ -75,7 +75,7 @@ declare option ver:module-version "2.0";
  :   with the executed process.
  :)
 declare %an:sequential function process:exec(
-  $filename as xs:string
+  $filename as string
 ) as object() external;
 
 (:~
@@ -104,8 +104,8 @@ declare %an:sequential function process:exec(
  :   with the executed process.
  :)
 declare %an:sequential function process:exec(
-  $filename as xs:string,
-  $args as xs:string*
+  $filename as string,
+  $args as string*
 ) as object() external;
 
 (:~
@@ -138,9 +138,9 @@ declare %an:sequential function process:exec(
  :   with the executed process.
  :)
 declare %an:sequential function process:exec(
-  $filename as xs:string,
-  $args as xs:string*,
-  $env as xs:string*
+  $filename as string,
+  $args as string*,
+  $env as string*
 ) as object() external;
 
 (:~
@@ -162,7 +162,7 @@ declare %an:sequential function process:exec(
  :   with the executed process.
  :)
 declare %an:sequential function process:exec-command(
-  $cmd as xs:string
+  $cmd as string
 ) as object() external;
 
 (:~
@@ -185,6 +185,6 @@ declare %an:sequential function process:exec-command(
  :   with the executed process.
  :)
 declare %an:sequential function process:exec-command(
-  $cmd as xs:string,
-  $args as xs:string*
+  $cmd as string,
+  $args as string*
 ) as object() external;
