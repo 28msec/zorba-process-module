@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DECLARE_ZORBA_MODULE (URI "http://www.zorba-xquery.com/modules/process" VERSION 2.0 FILE "process-2.xq")
+DECLARE_ZORBA_MODULE (URI "http://zorba.io/modules/process" VERSION 1.0 FILE "process-2.xq")
 DECLARE_ZORBA_MODULE (URI "http://www.zorba-xquery.com/modules/process" VERSION 1.0 FILE "process-1.xq")

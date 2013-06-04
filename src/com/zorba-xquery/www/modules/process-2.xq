@@ -22,7 +22,7 @@ jsoniq version "3.0";
  : <p>
  : Example:
  :<pre class="ace-static" ace-mode="xquery">
- :  import module namespace proc = "http://www.zorba-xquery.com/modules/process";
+ :  import module namespace proc = "http://zorba.io/modules/process";
  :  proc:exec("ls")
  :</pre>
  : <p>
@@ -42,7 +42,7 @@ jsoniq version "3.0";
  : @project Zorba/IO/Process
  :
  :)
-module namespace process = "http://www.zorba-xquery.com/modules/process";
+module namespace process = "http://zorba.io/modules/process";
 
 declare namespace an = "http://www.zorba-xquery.com/annotations";
 

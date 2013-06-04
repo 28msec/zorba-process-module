@@ -1,4 +1,4 @@
-import module namespace proc = "http://www.zorba-xquery.com/modules/process"; 
+import module namespace proc = "http://zorba.io/modules/process";
 
 let $result := proc:exec("echo",("hello","world"))
 return $result("stdout") eq "hello world
