@@ -51,7 +51,7 @@ public:
   virtual ~ProcessModule();
 
   virtual zorba::String getURI() const
-  { return "http://www.zorba-xquery.com/modules/process"; }
+  { return "http://zorba.io/modules/process"; }
 
   virtual zorba::ExternalFunction*
   getExternalFunction(const zorba::String& aLocalname);

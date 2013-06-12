@@ -1,4 +1,4 @@
-jsoniq version "3.0";
+jsoniq version "1.0";
 
 (:
  : Copyright 2006-2013 The FLWOR Foundation.
@@ -21,13 +21,13 @@ jsoniq version "3.0";
  : (i.e. exit code, result on standard out and error).
  : <p>
  : Example:
- :<pre class="ace-static" ace-mode="xquery">
- :  import module namespace proc = "http://zorba.io/modules/process";
- :  proc:exec("ls")
- :</pre>
+ : <pre>
+ :   import module namespace proc = "http://zorba.io/modules/process";
+ :   proc:exec("ls")
+ : </pre>
  : <p>
  : Potential result:
- : <pre class="ace-static" ace-mode="xquery"><![CDATA[
+ : <pre><![CDATA[
  : {
  :   "exit-code": 0,
  :   "stdout": "myfile.txt",
@@ -40,14 +40,13 @@ jsoniq version "3.0";
  :
  : @author Cezar Andrei, Nicolae Brinza
  : @project Zorba/IO/Process
- :
  :)
 module namespace process = "http://zorba.io/modules/process";
 
 declare namespace an = "http://www.zorba-xquery.com/annotations";
 
 declare namespace ver = "http://www.zorba-xquery.com/options/versioning";
-declare option ver:module-version "2.0";
+declare option ver:module-version "1.0";
 
 
 (:~
