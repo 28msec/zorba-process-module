@@ -25,6 +25,7 @@ xquery version "3.0";
  :  import module namespace proc = "http://www.zorba-xquery.com/modules/process";
  :  proc:exec("ls")
  :</pre>
+ : </p>
  : <p>
  : Potential result:
  : <pre class="ace-static" ace-mode="xquery"><![CDATA[
@@ -34,6 +35,7 @@ xquery version "3.0";
  :   <exit-code>0</exit-code>
  : </result>
  : ]]></pre>
+ : </p>
  :
  : @author Cezar Andrei
  : @project Zorba/IO/Process
