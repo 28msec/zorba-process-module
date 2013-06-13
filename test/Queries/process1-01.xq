@@ -1,4 +1,4 @@
-import module namespace proc = "http://www.zorba-xquery.com/modules/process"; 
+import module namespace proc = "http://www.zorba-xquery.com/modules/process#1.0"; 
 
 
 {

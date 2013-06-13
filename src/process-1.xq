@@ -1,7 +1,7 @@
 xquery version "3.0";
 
 (:
- : Copyright 2006-2009 The FLWOR Foundation.
+ : Copyright 2006-2013 The FLWOR Foundation.
  :
  : Licensed under the Apache License, Version 2.0 (the "License");
  : you may not use this file except in compliance with the License.
@@ -19,13 +19,14 @@ xquery version "3.0";
 (:~
  : This module provides functions to create a native process and return the result
  : (i.e. exit code, result on standard out and error).
- :
+ : <p>
  : Example:
  :<pre class="ace-static" ace-mode="xquery">
  :  import module namespace proc = "http://www.zorba-xquery.com/modules/process";
  :  proc:exec("ls")
  :</pre>
- :
+ : </p>
+ : <p>
  : Potential result:
  : <pre class="ace-static" ace-mode="xquery"><![CDATA[
  : <result xmlns="http://www.zorba-xquery.com/modules/process">
@@ -34,6 +35,7 @@ xquery version "3.0";
  :   <exit-code>0</exit-code>
  : </result>
  : ]]></pre>
+ : </p>
  :
  : @author Cezar Andrei
  : @project Zorba/IO/Process
