@@ -44,7 +44,6 @@
 #include <zorba/diagnostic_list.h>
 #include <zorba/user_exception.h>
 #include <zorba/empty_sequence.h>
-#include <zorba/file.h>
 
 #include "process.h"
 
