@@ -56,7 +56,7 @@ jsoniq version "1.0";
  : </p>
  :
  : @author Cezar Andrei, Nicolae Brinza
- : @project Zorba/IO/Process
+ : @project Zorba/Input Output/Process
  :)
 module namespace p = "http://zorba.io/modules/process";
 
