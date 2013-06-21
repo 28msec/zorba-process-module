@@ -51,6 +51,7 @@
 #ifndef WIN32
 int execvpe(const char *program, char **argv, char **envp)
 {
+  extern char **environ;
   char **saved = environ;
   int rc;
   environ = envp;
