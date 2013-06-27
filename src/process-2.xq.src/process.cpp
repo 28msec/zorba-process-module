@@ -51,12 +51,11 @@
 #ifndef WIN32
 int execvpe(const char *program, char **argv, char **envp)
 {
-  clearenv();
-  int i = 0;
-  while (envp[i] != NULL)
-    putenv(envp[i++]);
-  
+  extern char **environ;
+  char **saved = environ;
+  environ = envp;
   int rc = execvp(program, argv);
+  environ = saved;
   return rc;
 }
 #endif

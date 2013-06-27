@@ -38,7 +38,7 @@ xquery version "3.0";
  : </p>
  :
  : @author Cezar Andrei
- : @project Zorba/IO/Process
+ : @project Zorba/Input Output/Process
  :
  :)
 module namespace process = "http://www.zorba-xquery.com/modules/process";
