@@ -26,8 +26,8 @@ jsoniq version "1.0";
  : <p>
  : Example:
  : <pre>
- :   import module namespace proc = "http://zorba.io/modules/process";
- :   proc:exec("ls")
+ :   import module namespace p = "http://zorba.io/modules/process";
+ :   p:exec("ls")
  : </pre>
  : </p>
  :
@@ -56,7 +56,7 @@ jsoniq version "1.0";
  : </p>
  :
  : @author Cezar Andrei, Nicolae Brinza
- : @project Zorba/IO/Process
+ : @project Zorba/Input Output/Process
  :)
 module namespace p = "http://zorba.io/modules/process";
 
@@ -86,7 +86,7 @@ declare option ver:module-version "1.0";
  :
  : @return the result of the execution as an object
  :
- : @error p:PROC01 if an error occurred while communicating with the process.
+ : @error p:COMMUNICATION if an error occurred while communicating with the process.
  :)
 declare %an:sequential function p:exec(
   $filename as string
@@ -113,7 +113,7 @@ declare %an:sequential function p:exec(
  :
  : @return the result of the execution as an object
  :
- : @error p:PROC01 if an error occurred while communicating with the process.
+ : @error p:COMMUNICATION if an error occurred while communicating with the process.
  :)
 declare %an:sequential function p:exec(
   $filename as string,
@@ -147,7 +147,7 @@ declare %an:sequential function p:exec(
  :
  : @return the result of the execution as an object
  :
- : @error p:PROC01 if an error occurred while communicating with the process.
+ : @error p:COMMUNICATION if an error occurred while communicating with the process.
  :)
 declare %an:sequential function p:exec(
   $filename as string,
@@ -168,7 +168,7 @@ declare %an:sequential function p:exec(
  :
  : @return the result of the execution as an object
  :
- : @error p:PROC01 if an error occurred while communicating with the process.
+ : @error p:COMMUNICATION if an error occurred while communicating with the process.
  :)
 declare %an:sequential function p:exec-command(
   $cmd as string
@@ -189,7 +189,7 @@ declare %an:sequential function p:exec-command(
  :
  : @return the result of the execution as an object
  :
- : @error p:PROC01 if an error occurred while communicating with the process.
+ : @error p:COMMUNICATION if an error occurred while communicating with the process.
  :)
 declare %an:sequential function p:exec-command(
   $cmd as string,

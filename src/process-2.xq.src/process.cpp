@@ -51,11 +51,12 @@
 #ifndef WIN32
 int execvpe(const char *program, char **argv, char **envp)
 {
-  char **saved = environ;
-  int rc;
-  environ = envp;
-  rc = execvp(program, argv);
-  environ = saved;
+  clearenv();
+  int i = 0;
+  while (envp[i] != NULL)
+    putenv(envp[i++]);
+  
+  int rc = execvp(program, argv);
   return rc;
 }
 #endif
@@ -104,8 +105,7 @@ void throw_last_error(const zorba::String& aFilename, unsigned int aLineNumber){
   wsprintf(lErrorBuffer,TEXT("Process Error Code: %d - Message= %s"),GetLastError(), (TCHAR *)lpvMessageBuffer);
   LocalFree(lpvMessageBuffer);
   Item lQName = ProcessModule::getItemFactory()->createQName(
-    "http://www.zorba-xquery.com/modules/process",
-    "PROC01");
+    "http://zorba.io/modules/process", "COMMUNICATION");
 #ifdef UNICODE
   char error_str[1024];
   WideCharToMultiByte(CP_UTF8, 0, lErrorBuffer, -1, error_str, sizeof(error_str), NULL, NULL);
@@ -238,7 +238,7 @@ int run_process(
       || !CreatePipe(&lErrRead,&lStdErr,&lSecurityAttributes,1024*1024) // std::cerr >> lErrRead
     ){
     Item lQName = ProcessModule::getItemFactory()->createQName(
-      "http://www.zorba-xquery.com/modules/process", "PROC01");
+      "http://zorba.io/modules/process", "COMMUNICATION");
     throw USER_EXCEPTION(lQName,
       "Couldn't create one of std::cout/std::cerr pipe for child process execution."
     );
@@ -260,7 +260,7 @@ int run_process(
       lErrorMsg 
         << "Couldn't get exit code from child process. Executed command: '" << aCommand << "'.";
       Item lQName = ProcessModule::getItemFactory()->createQName(
-        "http://www.zorba-xquery.com/modules/process", "PROC01");
+        "http://zorba.io/modules/process", "COMMUNICATION");
       throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
     }
   
@@ -450,7 +450,7 @@ ExecFunction::evaluate(
     std::stringstream lErrorMsg;
     lErrorMsg << "Failed to execute the command (" << code << ")";
     Item lQName = ProcessModule::getItemFactory()->createQName(
-      "http://www.zorba-xquery.com/modules/process", "PROC01");
+      "http://zorba.io/modules/process", "COMMUNICATION");
     throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
   }
   exit_code = code;
@@ -488,7 +488,7 @@ ExecFunction::evaluate(
       std::stringstream lErrorMsg;
       lErrorMsg << "Failed to execute the command (" << pid << ")";
       Item lQName = ProcessModule::getItemFactory()->createQName(
-            "http://www.zorba-xquery.com/modules/process", "PROC01");
+            "http://zorba.io/modules/process", "COMMUNICATION");
       throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
       return NULL;
     }
@@ -514,7 +514,7 @@ ExecFunction::evaluate(
       std::stringstream lErrorMsg;
       lErrorMsg << "Failed to close the err stream (" << status << ")";
       Item lQName = ProcessModule::getItemFactory()->createQName(
-        "http://www.zorba-xquery.com/modules/process", "PROC01");
+        "http://zorba.io/modules/process", "COMMUNICATION");
       throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());
     }
 
@@ -527,7 +527,7 @@ ExecFunction::evaluate(
         std::stringstream lErrorMsg;
         lErrorMsg << "Failed to wait for child process ";
         Item lQName = ProcessModule::getItemFactory()->createQName(
-          "http://www.zorba-xquery.com/modules/process", "PROC01");
+          "http://zorba.io/modules/process", "COMMUNICATION");
         throw USER_EXCEPTION(lQName, lErrorMsg.str().c_str());          
     }
 
