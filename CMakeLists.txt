@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+MESSAGE(STATUS "")
+MESSAGE(STATUS "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+MESSAGE(STATUS "Configuring external module <process>")
+MESSAGE(STATUS "-------------------------------------------------------------")
+MESSAGE(STATUS "")
+
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT (zorba_process_module)
@@ -39,3 +45,8 @@ IF (WIN32)
 ENDIF (WIN32)
 
 DONE_DECLARING_ZORBA_URIS()
+
+MESSAGE(STATUS "")
+MESSAGE(STATUS "-------------------------------------------------------------")
+MESSAGE(STATUS "Configuration SUCCEEDED for external module <process>")
+MESSAGE(STATUS "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
